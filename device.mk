@@ -247,6 +247,7 @@ PRODUCT_PACKAGES += \
     init.mmi.rc \
     init.qcom.rc \
     init.target.rc \
+    init.safailnet.rc \
     fstab.qcom \
     ueventd.qcom.rc
 
