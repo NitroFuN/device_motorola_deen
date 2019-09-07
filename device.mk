@@ -144,7 +144,7 @@ PRODUCT_PACKAGES += \
 # Camera
 PRODUCT_PACKAGES += \
     libbson \
-    Camera2 \
+    Snap \
     camera.device@1.0-impl \
     camera.device@3.2-impl:32 \
     android.hardware.camera.provider@2.4-impl:32 \
@@ -153,7 +153,8 @@ PRODUCT_PACKAGES += \
     vendor.qti.hardware.camera.device@1.0_vendor \
     android.frameworks.displayservice@1.0_32 \
     libgui_vendor \
-    libstdc++.vendor
+    libstdc++.vendor \
+    libwui
 
 # CarrierConfig
 PRODUCT_PACKAGES += \
