@@ -18,16 +18,16 @@
 
 set -e
 
-DEVICE=ali
+DEVICE=deen
 VENDOR=motorola
 
 # Load extract_utils and do some sanity checks
 MY_DIR="${BASH_SOURCE%/*}"
 if [[ ! -d "${MY_DIR}" ]]; then MY_DIR="${PWD}"; fi
 
-REVENGEOS_ROOT="${MY_DIR}/../../.."
+LINEAGE_ROOT="${MY_DIR}/../../.."
 
-HELPER="${REVENGEOS_ROOT}/vendor/revengeos/build/tools/extract_utils.sh"
+HELPER="${LINEAGE_ROOT}/vendor/lineage/build/tools/extract_utils.sh"
 if [ ! -f "${HELPER}" ]; then
     echo "Unable to find helper script at ${HELPER}"
     exit 1
@@ -35,7 +35,7 @@ fi
 source "${HELPER}"
 
 # Default to sanitizing the vendor folder before extraction
-CLEAN_VENDOR=false
+CLEAN_VENDOR=true
 SECTION=
 KANG=
 
@@ -59,30 +59,9 @@ if [ -z "${SRC}" ]; then
     SRC=adb
 fi
 
-# Load wrapped shim
-function blob_fixup() {
-    case "${1}" in
-
-    vendor/lib/libmot_gpu_mapper.so)
-        sed -i "s/libgui/libwui/" "${2}"
-        ;;
-
-    vendor/lib/libmmcamera_vstab_module.so)
-        sed -i "s/libgui/libwui/" "${2}"
-        ;;
-
-    vendor/lib/libjscore.so)
-        sed -i "s/libgui/libwui/" "${2}"
-        ;;
-
-    esac
-}
-
 # Initialize the helper
-setup_vendor "${DEVICE}" "${VENDOR}" "${REVENGEOS_ROOT}" false "${CLEAN_VENDOR}"
+setup_vendor "${DEVICE}" "${VENDOR}" "${LINEAGE_ROOT}" false "${CLEAN_VENDOR}"
 
 extract "${MY_DIR}/proprietary-files.txt" "${SRC}" ${KANG} --section "${SECTION}"
-
-BLOB_ROOT="$REVENGEOS_ROOT"/vendor/"$VENDOR"/"$DEVICE"/proprietary
 
 "${MY_DIR}/setup-makefiles.sh"

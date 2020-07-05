@@ -22,7 +22,38 @@ DEVICE_PACKAGE_OVERLAYS += \
     $(LOCAL_PATH)/overlay-lineage
 
 # Soong namespaces
-PRODUCT_SOONG_NAMESPACES += device/motorola/ali
+PRODUCT_SOONG_NAMESPACES += device/motorola/deen
+
+# A/B updater
+AB_OTA_UPDATER := true
+
+AB_OTA_PARTITIONS += \
+    boot \
+    system \
+    vendor
+
+AB_OTA_POSTINSTALL_CONFIG += \
+    RUN_POSTINSTALL_system=true \
+    POSTINSTALL_PATH_system=system/bin/otapreopt_script \
+    FILESYSTEM_TYPE_system=ext4 \
+    POSTINSTALL_OPTIONAL_system=true
+
+PRODUCT_PACKAGES += \
+    otapreopt_script \
+    update_engine \
+    update_engine_sideload \
+    update_verifier
+
+# The following modules are included in debuggable builds only.
+PRODUCT_PACKAGES_DEBUG += \
+    bootctl \
+    update_engine_client
+
+# Boot control HAL
+PRODUCT_PACKAGES += \
+    android.hardware.boot@1.0-impl.recovery \
+    bootctrl.msm8953 \
+    bootctrl.msm8953.recovery
 
 # These are the hardware-specific features
 PRODUCT_COPY_FILES += \
@@ -121,19 +152,8 @@ PRODUCT_PACKAGES += \
     vendor.qti.hardware.camera.device@1.0 \
     vendor.qti.hardware.camera.device@1.0_vendor \
     android.frameworks.displayservice@1.0_32 \
-    libjustshoot_shim \
-    libgpu_mapper_shim \
     libgui_vendor \
-    libwui
-
-# Camera Configurations
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/camera/sdm450_mot_ali_camera.xml:$(TARGET_COPY_OUT_VENDOR)/etc/camera/sdm450_mot_ali_camera.xml \
-    $(LOCAL_PATH)/configs/camera/s5k4h7_chromatix.xml:$(TARGET_COPY_OUT_VENDOR)/etc/camera/s5k4h7_chromatix.xml \
-    $(LOCAL_PATH)/configs/camera/mot_s5k3p8sp_chromatix.xml:$(TARGET_COPY_OUT_VENDOR)/etc/camera/mot_s5k3p8sp_chromatix.xml \
-    $(LOCAL_PATH)/configs/camera/mot_ov5675_chromatix.xml:$(TARGET_COPY_OUT_VENDOR)/etc/camera/mot_ov5675_chromatix.xml \
-    $(LOCAL_PATH)/configs/camera/mot_ov12a10_chromatix.xml:$(TARGET_COPY_OUT_VENDOR)/etc/camera/mot_ov12a10_chromatix.xml
-
+    libstdc++.vendor
 
 # CarrierConfig
 PRODUCT_PACKAGES += \
@@ -278,7 +298,7 @@ PRODUCT_PACKAGES += \
 
 # Light
 PRODUCT_PACKAGES += \
-    android.hardware.light@2.0-service.ali
+    android.hardware.light@2.0-service.deen
 
 # Livedisplay
 PRODUCT_PACKAGES += \
@@ -323,7 +343,7 @@ PRODUCT_PACKAGES += \
 
 # Init
 PRODUCT_PACKAGES += \
-    init.ali.rc
+    init.deen.rc
 
 # NFC
 PRODUCT_PACKAGES += \
@@ -420,8 +440,7 @@ PRODUCT_PACKAGES += \
 
 # Thermal
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/thermal-engine.conf:$(TARGET_COPY_OUT_VENDOR)/etc/thermal-engine.conf \
-    $(LOCAL_PATH)/configs/thermal-engine-ali.conf:$(TARGET_COPY_OUT_VENDOR)/etc/thermal-engine-ali.conf
+    $(LOCAL_PATH)/configs/thermal-engine-deen.conf:$(TARGET_COPY_OUT_VENDOR)/etc/thermal-engine.conf
 
 # TextClassifier smart selection model files
 PRODUCT_PACKAGES += \
@@ -476,10 +495,6 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/wifi/WCNSS_qcom_wlan_nv.bin:$(TARGET_COPY_OUT_VENDOR)/firmware/wlan/prima/WCNSS_qcom_wlan_nv.bin \
     $(LOCAL_PATH)/wifi/WCNSS_qcom_cfg.ini:$(TARGET_COPY_OUT_VENDOR)/etc/wifi/WCNSS_qcom_cfg.ini \
     $(LOCAL_PATH)/wifi/WCNSS_qcom_cfg.ini:$(TARGET_COPY_OUT_VENDOR)/firmware/wlan/prima/WCNSS_qcom_cfg.ini
-
-# Wi-Fi Display
-PRODUCT_PACKAGES += \
-    libaacwrapper
 
 PRODUCT_BUILD_PROP_OVERRIDES += BUILD_UTC_DATE=0
 

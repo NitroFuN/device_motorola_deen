@@ -23,9 +23,6 @@
          autodetected from the Configuration. -->
     <bool name="config_showNavigationBar">true</bool>
 
-    <!-- Whether device can force navbar disabling -->
-    <bool name="config_canForceDisableNavigationBar">true</bool>
-
     <!-- Enable system navigation keys. -->
     <bool name="config_supportSystemNavigationKeys">true</bool>
 
@@ -70,78 +67,39 @@
     <!-- Is the notification LED intrusive? Used to decide if there should be a disable option -->
     <bool name="config_intrusiveNotificationLed">true</bool>
 
-    <!-- Is the battery LED intrusive? Used to decide if there should be a disable option -->
-    <bool name="config_intrusiveBatteryLed">true</bool>
-
-    <!-- Does the battery LED support multiple colors?
-         Used to decide if the user can change the colors -->
-    <bool name="config_multiColorBatteryLed">false</bool>
-
-    <!-- Do the battery/notification LEDs support pulsing?
-         Used to decide if we show pulse settings -->
-    <bool name="config_ledCanPulse">true</bool>
-
-    <!-- Component name of the combo network location provider. -->
-    <string name="config_comboNetworkLocationProvider" translatable="false">com.qualcomm.location</string>
-
-    <!-- Enable overlay for all location components. -->
-    <bool name="config_enableNetworkLocationOverlay" translatable="false">false</bool>
-    <string name="config_networkLocationProviderPackageName" translatable="false">com.qualcomm.location</string>
-
     <!-- Whether device needs to wait for Qualcomm MPCTL service to start
          before setting power profiles on boot. -->
     <bool name="config_waitForMpctlOnBoot">true</bool>
 
     <!-- Array of light sensor LUX values to define our levels for auto backlight brightness support.
-         The N entries of this array define N + 1 control points as follows:
-         (1-based arrays)
-         Point 1:            (0, value[1]):             lux <= 0
-         Point 2:     (level[1], value[2]):  0        < lux <= level[1]
-         Point 3:     (level[2], value[3]):  level[2] < lux <= level[3]
+         The N entries of this array define N  1 zones as follows:
+
+         Zone 0:        0 <= LUX < array[0]
+         Zone 1:        array[0] <= LUX < array[1]
          ...
-         Point N+1: (level[N], value[N+1]):  level[N] < lux
-         The control points must be strictly increasing.  Each control point
-         corresponds to an entry in the brightness backlight values arrays.
-         For example, if LUX == level[1] (first element of the levels array)
-         then the brightness will be determined by value[2] (second element
-         of the brightness values array).
-         Spline interpolation is used to determine the auto-brightness
-         backlight values for LUX levels between these control points.
+         Zone N:        array[N - 1] <= LUX < array[N]
+         Zone N + 1     array[N] <= LUX < infinity
+
          Must be overridden in platform specific overlays -->
     <integer-array name="config_autoBrightnessLevels">
-        <item>5</item>
-        <item>25</item>
-        <item>50</item>
-        <item>100</item>
-        <item>200</item>
-        <item>300</item>
-        <item>500</item>
-        <item>750</item>
-        <item>1000</item>
-        <item>1500</item>
-        <item>2000</item>
-        <item>10000</item>
-    </integer-array>
-
-    <!-- Array of output values for LCD backlight corresponding to the LUX values
-         in the config_autoBrightnessLevels array.  This array should have size one greater
-         than the size of the config_autoBrightnessLevels array.
-         The brightness values must be between 0 and 255 and be non-decreasing.
-         This must be overridden in platform specific overlays -->
-    <integer-array name="config_autoBrightnessLcdBacklightValues">
-        <item>7</item>
-        <item>10</item>
-        <item>16</item>
-        <item>29</item>
-        <item>48</item>
-        <item>80</item>
-        <item>126</item>
-        <item>181</item>
-        <item>211</item>
-        <item>232</item>
-        <item>255</item>
-        <item>255</item>
-        <item>255</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>8</item>
+        <item>12</item>
+        <item>20</item>
+        <item>33</item>
+        <item>55</item>
+        <item>90</item>
+        <item>148</item>
+        <item>245</item>
+        <item>403</item>
+        <item>665</item>
+        <item>1097</item>
+        <item>1808</item>
+        <item>2981</item>
+        <item>5000</item>
     </integer-array>
 
     <!-- Array of desired screen brightness in nits corresponding to the lux values
@@ -209,20 +167,23 @@
          This array should be equal in size to config_screenBrightnessBacklight. -->
     <integer-array name="config_screenBrightnessBacklight">
         <item>0</item>
-        <item>3</item>
-        <item>10</item>
-        <item>36</item>
-        <item>56</item>
-        <item>66</item>
-        <item>77</item>
-        <item>92</item>
-        <item>115</item>
-        <item>138</item>
-        <item>153</item>
-        <item>161</item>
-        <item>214</item>
-        <item>230</item>
-        <item>256</item>
+        <item>15</item>
+        <item>30</item>
+        <item>45</item>
+        <item>60</item>
+        <item>75</item>
+        <item>90</item>
+        <item>105</item>
+        <item>120</item>
+        <item>135</item>
+        <item>150</item>
+        <item>165</item>
+        <item>180</item>
+        <item>195</item>
+        <item>210</item>
+        <item>225</item>
+        <item>240</item>
+        <item>255</item>
     </integer-array>
 
     <!-- Indicate whether to allow the device to suspend when the screen is off
@@ -431,11 +392,11 @@
     <!-- Boolean indicating whether or not wifi should turn off when emergency call is made -->
     <bool translatable="false" name="config_wifi_turn_off_during_emergency_call">true</bool>
 
+    <!-- MMS user agent string -->
+    <string name="config_mms_user_agent" translatable="false">motog7</string>
+
     <!-- MMS user agent prolfile url -->
     <string name="config_mms_user_agent_profile_url">http://uaprof.motorola.com/phoneconfig/motov1/Profile/motov1.rdf</string>
-
-    <!-- MMS user agent string -->
-    <string name="config_mms_user_agent">motog6</string>
 
     <!-- Flag indicating if the speed up audio on mt call code should be executed -->
     <bool name="config_speed_up_audio_on_mt_calls">true</bool>
@@ -528,38 +489,4 @@
 
     <!-- True if the firmware supports Wi-Fi link probing -->
     <bool name="config_wifi_link_probing_supported">true</bool>
-
-    <!-- Smart replies in notifications: Whether we disable the feature unless the app targets P -->
-    <bool name="config_smart_replies_in_notifications_requires_targeting_p">false</bool>
-
-    <!-- Indicate whether the SD card is accessible without removing the battery. -->
-    <bool name="config_batterySdCardAccessibility">true</bool>
-
-    <!-- Whether the device has fingeprint sensor or not -->
-    <bool name="config_hasFingerprintSensor">true</bool>
-
-    <!-- Configure wifi tcp buffersizes in the form:
-         rmem_min,rmem_def,rmem_max,wmem_min,wmem_def,wmem_max -->
-    <string name="config_wifi_tcp_buffers">131072,262144,6287200,4096,221184,3145728</string>
-
-    <!-- Paths to the libraries that contain device specific key handlers -->
-    <string-array name="config_deviceKeyHandlerLibs" translatable="false">
-        <item>/system/priv-app/MotoActions/MotoActions.apk</item>
-    </string-array>
-
-    <!-- Names of the key handler classes -->
-    <string-array name="config_deviceKeyHandlerClasses" translatable="false">
-        <item>com.moto.actions.KeyHandler</item>
-    </string-array>
-
-    <!-- Number of physical SIM slots on the device. This includes both eSIM and pSIM slots, and
-         is not necessarily the same as the number of phones/logical modems supported by the device.
-         For example, a multi-sim device can have 2 phones/logical modems, but 3 physical slots,
-         or a single SIM device can have 1 phones/logical modems, but 2 physical slots (one eSIM
-         and one pSIM) -->
-    <integer name="config_num_physical_slots">2</integer>
-
-    <!-- Whether the Unprocessed audio source supports the required frequency range and level -->
-    <bool name="config_supportAudioSourceUnprocessed">true</bool>
-
 </resources>

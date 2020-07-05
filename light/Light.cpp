@@ -4,7 +4,7 @@
  * Copyright (C) 2019, Harshit Jain
  */
 
-#define LOG_TAG "android.hardware.light@2.0-service.ali"
+#define LOG_TAG "android.hardware.light@2.0-service.deen"
 
 #include <log/log.h>
 #include <fstream>
@@ -47,35 +47,35 @@ static inline bool isLit(const LightState& state) {
 /*
  * Device specific methods
  */
-static void aliBacklight(const LightState& state) {
+static void deenBacklight(const LightState& state) {
     uint32_t brightness = state.color & 0xFF;
     set(LCD_LED BRIGHTNESS, brightness);
 }
 
-static inline void aliLed(const LightState& state, uint32_t pattern) {
+static inline void deenLed(const LightState& state, uint32_t pattern) {
     isLit(state) ? set(WHITE BRIGHTNESS, pattern) : set(WHITE BRIGHTNESS, 0);
 }
 
-static void aliNotification(const LightState& state) {
+static void deenNotification(const LightState& state) {
     /* Fast blink */
-    aliLed(state, 1);
+    deenLed(state, 1);
 }
 
-static void aliAttention(const LightState& state) {
+static void deenAttention(const LightState& state) {
     /* Slow blink */
-    aliLed(state, 2);
+    deenLed(state, 2);
 }
 
-static void aliChargingNotification(const LightState& state) {
+static void deenChargingNotification(const LightState& state) {
     /* Steady Led */
-    aliLed(state, 3);
+    deenLed(state, 3);
 }
 
 static std::map<Type, std::function<void(const LightState&)>> lights = {
-    {Type::BACKLIGHT, aliBacklight},
-    {Type::NOTIFICATIONS, aliNotification},
-    {Type::BATTERY, aliChargingNotification},
-    {Type::ATTENTION, aliAttention},
+    {Type::BACKLIGHT, deenBacklight},
+    {Type::NOTIFICATIONS, deenNotification},
+    {Type::BATTERY, deenChargingNotification},
+    {Type::ATTENTION, deenAttention},
 };
 
 Light::Light() {}
