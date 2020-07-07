@@ -122,9 +122,9 @@ PRODUCT_COPY_FILES +=  \
     $(LOCAL_PATH)/audio/audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_configuration.xml \
     $(LOCAL_PATH)/audio/audio_output_policy.conf:$(TARGET_COPY_OUT_VENDOR)/etc/audio_output_policy.conf \
     $(LOCAL_PATH)/audio/aov_ec_mixer_paths.xml:$(TARGET_COPY_OUT_VENDOR)/etc/aov_ec_mixer_paths.xml \
-    $(LOCAL_PATH)/audio/mixer_paths.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_paths.xml \
+    $(LOCAL_PATH)/audio/mixer_paths.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_paths_wcd9306.xml \
     $(LOCAL_PATH)/audio/audio_ext_spkr.conf:$(TARGET_COPY_OUT_VENDOR)/etc/audio_ext_spkr.conf \
-    $(LOCAL_PATH)/audio/audio_platform_info.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_platform_info.xml
+    $(LOCAL_PATH)/audio/audio_platform_info.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_platform_info_extcodec.xml
 
 PRODUCT_COPY_FILES += \
     frameworks/av/services/audiopolicy/config/a2dp_in_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/a2dp_in_audio_policy_configuration.xml \
@@ -344,23 +344,7 @@ PRODUCT_PACKAGES += \
 
 # Init
 PRODUCT_PACKAGES += \
-    init.class_main.sh \
-    init.mmi.usb.sh \
-    init.oem.panel.sh \
-    init.qcom.early_boot.sh \
-    init.qcom.post_boot.sh \
-    init.qcom.sensors.sh \
-    init.qcom.sh \
-    init.qti.qseecomd.sh \
-    init.hidl.sensor.rc \
-    init.mmi.chipset.rc \
-    init.mmi.overlay.rc \
-    init.mmi.usb.rc \
-    init.mmi.rc \
-    init.qcom.rc \
-    init.target.rc \
-    fstab.qcom \
-    ueventd.qcom.rc
+    init.deen.rc
 
 # NFC
 PRODUCT_PACKAGES += \
@@ -389,6 +373,27 @@ PRODUCT_DEXPREOPT_SPEED_APPS += SystemUI
 
 PRODUCT_PACKAGES += \
     libqti_vndfwk_detect
+
+# Ramdisk
+PRODUCT_PACKAGES += \
+    wlan_carrier_bin.sh
+
+PRODUCT_PACKAGES += \
+    fstab.qcom \
+    init.mmi.boot.sh \
+    init.mmi.rc \
+    init.mmi.chipset.rc \
+    init.mmi.usb.rc \
+    init.qcom.rc \
+    init.qcom.ril.sh \
+    ueventd.qcom.rc \
+    init.class_main.sh \
+    init.qcom.post_boot.sh \
+    init.hidl.sensor.rc \
+    init.qcom.sensors.sh \
+    init.qti.fm.sh \
+    init.qti.fm.rc \
+    init.qcom.sh
 
 # Powerhint configuration file
 PRODUCT_COPY_FILES += \
