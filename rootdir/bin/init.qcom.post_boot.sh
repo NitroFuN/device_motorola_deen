@@ -367,7 +367,7 @@ function configure_zram_parameters() {
     # For 512MB Go device, size = 384MB, set same for Non-Go.
     # For 1GB Go device, size = 768MB, set same for Non-Go.
     # For >=2GB Non-Go devices, size = 50% of RAM size. Limit the size to 4GB.
-    # And enable lz4 zram compression for Go targets.
+    # And enable lz4 zram compression for all targets.
 
     RamSizeGB=`echo "($MemTotal / 1048576 ) + 1" | bc`
     zRamSizeBytes=`echo "$RamSizeGB * 1024 * 1024 * 1024 / 2" | bc`
@@ -377,9 +377,7 @@ function configure_zram_parameters() {
         zRamSizeBytes=4294967296
     fi
 
-    if [ "$low_ram" == "true" ]; then
-        echo lz4 > /sys/block/zram0/comp_algorithm
-    fi
+    echo lz4 > /sys/block/zram0/comp_algorithm
 
     if [ -f /sys/block/zram0/disksize ]; then
         if [ -f /sys/block/zram0/use_dedup ]; then
@@ -523,30 +521,36 @@ else
 
         # Calculate vmpressure_file_min as below & set for 64 bit:
         # vmpressure_file_min = last_lmk_bin + (last_lmk_bin - last_but_one_lmk_bin)
-        if [ "$arch_type" == "aarch64" ]; then
-            minfree_series=`cat /sys/module/lowmemorykiller/parameters/minfree`
-            minfree_1="${minfree_series#*,}" ; rem_minfree_1="${minfree_1%%,*}"
-            minfree_2="${minfree_1#*,}" ; rem_minfree_2="${minfree_2%%,*}"
-            minfree_3="${minfree_2#*,}" ; rem_minfree_3="${minfree_3%%,*}"
-            minfree_4="${minfree_3#*,}" ; rem_minfree_4="${minfree_4%%,*}"
-            minfree_5="${minfree_4#*,}"
+        minfree_series=`cat /sys/module/lowmemorykiller/parameters/minfree`
+        minfree_1="${minfree_series#*,}" ; rem_minfree_1="${minfree_1%%,*}"
+        minfree_2="${minfree_1#*,}" ; rem_minfree_2="${minfree_2%%,*}"
+        minfree_3="${minfree_2#*,}" ; rem_minfree_3="${minfree_3%%,*}"
+        minfree_4="${minfree_3#*,}" ; rem_minfree_4="${minfree_4%%,*}"
+        minfree_5="${minfree_4#*,}"
 
-            vmpres_file_min=$((minfree_5 + (minfree_5 - rem_minfree_4)))
-            echo $vmpres_file_min > /sys/module/lowmemorykiller/parameters/vmpressure_file_min
+        vmpres_file_min=$((minfree_5 + (minfree_5 - rem_minfree_4)))
+        vmpres_file_min_critical=$((vmpres_file_min + (vmpres_file_min - minfree_5)))
+        echo $vmpres_file_min > /sys/module/lowmemorykiller/parameters/vmpressure_file_min
+        echo $vmpres_file_min_critical > /sys/module/lowmemorykiller/parameters/vmpressure_file_min_critical
+
+        if [ "$arch_type" == "aarch64" ]; then
+            echo 1048576 > /sys/module/lowmemorykiller/parameters/vmpressure_file_min_critical
         else
-            # Set LMK series, vmpressure_file_min for 32 bit non-go targets.
             # Disable Core Control, enable KLMK for non-go 8909.
             if [ "$ProductName" == "msm8909" ]; then
                 disable_core_ctl
                 echo 1 > /sys/module/lowmemorykiller/parameters/enable_lmk
             fi
-        echo "15360,19200,23040,26880,34415,43737" > /sys/module/lowmemorykiller/parameters/minfree
-        echo 53059 > /sys/module/lowmemorykiller/parameters/vmpressure_file_min
         fi
 
         # Enable adaptive LMK for all targets &
         # use Google default LMK series for all 64-bit targets >=2GB.
         echo 1 > /sys/module/lowmemorykiller/parameters/enable_adaptive_lmk
+
+        # moto add, Disable adaptive LMK for target > 3GB
+        if [ $MemTotal -gt 3145728 ]; then
+            echo 0 > /sys/module/lowmemorykiller/parameters/enable_adaptive_lmk
+        fi
 
         # Enable oom_reaper
         if [ -f /sys/module/lowmemorykiller/parameters/oom_reaper ]; then
@@ -565,7 +569,8 @@ else
           # sdm845 - 321, 341
           # msm8998 - 292, 319
           # msm8996 - 246, 291, 305, 312
-          "321" | "341" | "292" | "319" | "246" | "291" | "305" | "312")
+          # channel - 349 (IKSWQ-54948)
+          "321" | "341" | "292" | "319" | "246" | "291" | "305" | "312" | "349")
             ;;
           *)
             #Set PPR parameters for all other targets.
@@ -2123,6 +2128,9 @@ case "$target" in
             fi
             echo 1 > /sys/module/big_cluster_min_freq_adjust/parameters/min_freq_adjust
 
+            # Log kernel wake-up source
+            echo 1 > /sys/module/msm_show_resume_irq/parameters/debug_mask
+
             ;;
         esac
     ;;
@@ -2145,6 +2153,9 @@ case "$target" in
 	if [ -f /sys/devices/soc0/platform_subtype_id ]; then
 	    platform_subtype_id=`cat /sys/devices/soc0/platform_subtype_id`
         fi
+
+        # Log kernel wake-up source
+        echo 1 > /sys/module/msm_show_resume_irq/parameters/debug_mask
 
         # Socid 386 = Pukeena
         case "$soc_id" in
