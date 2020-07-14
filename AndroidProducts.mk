@@ -14,9 +14,9 @@
 # limitations under the License.
 
 PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/lineage_deen.mk
+    $(LOCAL_DIR)/ion_deen.mk
 
 COMMON_LUNCH_CHOICES := \
-    lineage_deen-user \
-    lineage_deen-userdebug \
-    lineage_deen-eng
+    ion_deen-user \
+    ion_deen-userdebug \
+    ion_deen-eng
